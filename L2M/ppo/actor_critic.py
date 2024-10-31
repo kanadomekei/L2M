@@ -16,7 +16,8 @@ class ActorCritic(nn.Module):
 
     def get_masks_idxs_subg_h(self, ob, g):
         edge_mask = (ob.select(2, 0).long() == 0)
-        flatten_edge_idxs = torch.nonzero(edge_mask.view(-1), as_tuple=False).squeeze(1)
+        # flatten_edge_idxs = torch.nonzero(edge_mask.view(-1), as_tuple=False).squeeze(1)
+        flatten_edge_idxs = torch.nonzero(edge_mask.reshape(-1), as_tuple=False).squeeze(1)
 
         subg_mask = edge_mask.any(dim=1)
         flatten_subg_idxs = torch.nonzero(subg_mask, as_tuple=False).squeeze(1)
