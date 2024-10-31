@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  pytorch:
+    image: pytorch/pytorch:2.0.1-cuda11.7-cudnn8-devel
+    runtime: nvidia
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+    volumes:
+      - ./:/
+    tty: true
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
