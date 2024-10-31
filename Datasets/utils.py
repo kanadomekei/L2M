@@ -4,8 +4,6 @@ import numpy as np
 from pathlib import Path
 from torch.utils.data import Dataset
 import torch
-from jgrapht.convert import from_nx
-from jgrapht.algorithms.matching import blossom5_max_weight
 
 
 def get_eid_weight(g):
@@ -20,11 +18,17 @@ def get_eid_weight(g):
 def get_label(g):
     label_map = {edge: 0 for edge in g.edges}
     nx.set_edge_attributes(g, values=label_map, name='label')
-    jg = from_nx(g)
-    m = blossom5_max_weight(jg)[1]
-    for e in m:
-        u, v, _ = jg.edge_tuple(e)
+    
+    weight_dict = nx.get_edge_attributes(g, 'weight')
+    
+    matching = nx.max_weight_matching(g, maxcardinality=True, weight='weight')
+    
+    for edge in matching:
+        u, v = edge
         g.edges[u, v]['label'] = 1
+        if g.has_edge(v, u):
+            g.edges[v, u]['label'] = 1
+            
     return g
 
 
@@ -141,14 +145,13 @@ def get_dataset(mode='train',
         raise ValueError(error_mess)
 
     # Rand Dataset Only
-    if mode == 'train':
+    def generate_fn():
+        num_nodes = np.random.randint(min_n, max_n)
+        g = gen(n=num_nodes, **args)
+        g = get_eid_weight(g)
+        return g
 
-        def generate_fn():
-            num_nodes = np.random.randint(min_n, max_n)
-            g = gen(n=num_nodes, **args)
-            g = get_eid_weight(g)
-            return g
-
+    if mode in ['train', 'test', 'vali']:
         return GraphDataset(generate_fn=generate_fn)
     else:
         data_dir = type + "_{}_{}".format(min_n, max_n)
