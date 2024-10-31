@@ -30,8 +30,9 @@ parser.add_argument("--hk_p", type=float, default=0.05)
 parser.add_argument("--k", type=float, default=4)
 
 args = parser.parse_args()
-# device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-device = torch.device('cpu')
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+# device = torch.device('cpu')
+# print(device)
 
 # actor critic
 num_layers = 4

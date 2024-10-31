@@ -2,12 +2,16 @@ version: '3.8'
 
 services:
   pytorch:
-    image: pytorch/pytorch:2.0.1-cuda11.7-cudnn8-devel
+    build:
+      context: .
+      dockerfile: Dockerfile
     runtime: nvidia
     environment:
       - NVIDIA_VISIBLE_DEVICES=all
     volumes:
-      - ./:/
+      - ./:/workspaces
+    # ports:
+    #   - "8888:8888"
     tty: true
     deploy:
       resources:
